@@ -1,0 +1,16 @@
+[Unit]
+Description=BME680 BSEC Environmental Service
+Wants=inetutils-inetd.service
+After=inetutils-inetd.service
+
+[Service]
+Type=forking
+User=bsec
+Group=bsec
+#PIDFile=/var/bsec/bsec.pid
+ExecStart=/usr/bin/bsec -d
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
