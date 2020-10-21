@@ -4,8 +4,10 @@ Data collection daemon for Bosch BME680 temperature, humidity, atmospheric press
 ## Dependencies
 
 BME680 driver - https://github.com/BoschSensortec/BME680_driver
+
 BSEC library - https://www.bosch-sensortec.com/software-tools/software/bsec/
-RRD database running in inetd
+
+RRD database running under inetd
 
 ## Compiling for Raspberry Pi running 64-bit OS (Ubuntu 18.04)
 
@@ -57,88 +59,8 @@ Create rrd database
 ```
 sudo apt install rrdtool, php-rrd, inetutils-inetd
 mkdir /var/rrd
-rrdtool tune /var/rrd/env.rrd \
-          --step 3s \
-          DS:temperature:GAUGE:60:-50:50 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:humidity:GAUGE:60:0:100 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:pressure:GAUGE:60:800:1200 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:iaq:GAUGE:60:0:500 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:iaqs:GAUGE:60:0:10000 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:iaqp:GAUGE:60:0:100 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:co2eq:GAUGE:60:400:100000 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y \
-          DS:bvoc:GAUGE:60:0:1000 \
-          RRA:AVERAGE:0.5:1m:1d \
-          RRA:AVERAGE:0.5:1h:1M \
-          RRA:AVERAGE:0.5:1d:10y \
-          RRA:MIN:0.5:1m:1d \
-          RRA:MIN:0.5:1h:1M \
-          RRA:MIN:0.5:1d:10y \
-          RRA:MAX:0.5:1m:1d \
-          RRA:MAX:0.5:1h:1M \
-          RRA:MAX:0.5:1d:10y
+chmod 755 env.rrd.sh
+env.rrd.sh
 ```
 
 Run rrd under inetd
@@ -179,24 +101,7 @@ sudo chown -R bsec:bsec /var/bsec
 Create bsec.service
 
 ```
-sudo vi /lib/systemd/system/bsec.service
-[Unit]
-Description=BME680 BSEC Environmental Service
-Wants=inetutils-inetd.service
-After=inetutils-inetd.service
-
-[Service]
-Type=forking
-User=bsec
-Group=bsec
-#PIDFile=/var/bsec/bsec.pid
-ExecStart=/usr/bin/bsec -d
-ExecReload=/bin/kill -HUP $MAINPID
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-
+sudo cp bsec.service /lib/systemd/system/bsec.service
 systemctl enable bsec
 systemctl start bsec
 systemctl status bsec
