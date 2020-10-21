@@ -1,31 +1,3 @@
-/*
-libalgobsec.a static library for RaspberryPi\x64\PiThree_ArmV8 is 32-bit despite x64 label, so
-on aarch64 (rp3 running ubuntu 64-bit) 
-first, check which architures are supported by your kernel with arch-test, then install appropriate gcc-multilib
-
-arch-test
-arm64
-armhf
-
-sudo apt install gcc-8-multilib-arm-linux-gnueabihf
-
-second, build 32-bit version of libi2c using "-marm" cross-compiler option
-download libi2c source from https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/snapshot/i2c-tools-4.2.tar.gz
-uncompress, edit Makefile (use cross-compiler with -marm option and only build static libi2c)
-
-CC := /usr/bin/arm-linux-gnueabihf-gcc-8
-CFLAGS ?= -O2 -marm
-BUILD_DYNAMIC_LIB ?= 0
-BUILD_STATIC_LIB ?= 1
-
-then run "make"
-
-third, compile and link bsec using
-/usr/bin/arm-linux-gnueabihf-gcc-8 -marm -O3 -o bsec bsec.c bme680.c -L ../../i2c-tools-4.2/lib -L . -li2c -lalgobsec -lm -static
-
-You may want to add a user into i2c group to avoid running as root.
-*/
-
 #include <errno.h>
 #include <err.h>
 #include <ctype.h>
