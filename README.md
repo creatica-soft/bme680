@@ -112,4 +112,19 @@ Check the log files
 ```
 tail -f /var/bsec/bsec.log
 ```
+## Display the data
 
+Install nginx and php-fpm
+
+```
+sudo apt install nginx php-fpm
+sudo systemctl enable php-fpm
+sudo systemctl start php-fpm
+sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo cp *.php env.html nginx/html
+sudo mkdir nginx/html/images
+sudo chgrp www-data nginx/html/images
+```
+
+Open env.html in a browser http://localhost/env.html
