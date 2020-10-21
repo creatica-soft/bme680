@@ -3,11 +3,16 @@ Data collection daemon for Bosch BME680 temperature, humidity, atmospheric press
 
 ## Dependencies
 
-BME680 driver - https://github.com/BoschSensortec/BME680_driver
+* BME680 driver - https://github.com/BoschSensortec/BME680_driver
 
-BSEC library - https://www.bosch-sensortec.com/software-tools/software/bsec/
+* BSEC library - https://www.bosch-sensortec.com/software-tools/software/bsec/
 
-RRD database running under inetd
+* Lib i2c - https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/snapshot/i2c-tools-4.2.tar.gz
+
+* RRD database running under inetd
+
+* web server + php-rrd + php-fpm for hosting php files to display the data
+
 
 ## Compiling for Raspberry Pi running 64-bit OS (Ubuntu 18.04)
 
