@@ -112,9 +112,6 @@ void save_data(int64_t timestamp, float temp, float humidity, float pressure, fl
 	time_t t = time(NULL);
 	char * acc, * status;
 
-	if (!(gasp_acc == iaq_acc == iaqs_acc == co2_acc == bvoc_acc))
-		fprintf(log_out, "%sinconsistent accuracies: gasp_acc %u, iaq_acc %u, iaqs_acc %u, co2_acc %u, bvoc_acc %u\n", asctime(localtime(&t)), gasp_acc, iaq_acc, iaqs_acc, co2_acc, bvoc_acc);
-
 	switch (iaqs_acc) {
 	case UNRELIABLE: acc = "run-in stab. ongoing";
 		break;
