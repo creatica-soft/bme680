@@ -140,8 +140,8 @@ void save_data(int64_t timestamp, float temp, float humidity, float pressure, fl
 	time_t t = time(NULL);
 	char * acc, * status;
 
-	if (!(gas_acc == gasp_acc == iaq_acc == iaqs_acc == co2_acc == bvoc_acc))
-		fprintf(log_out, "%sinconsistent accuracies: gas_acc %u, gasp_acc %u, iaq_acc %u, iaqs_acc %u, co2_acc %u, bvoc_acc %u\n", asctime(localtime(&t)), gas_acc, gasp_acc, iaq_acc, iaqs_acc, co2_acc, bvoc_acc);
+	if (!(gasp_acc == iaq_acc == iaqs_acc == co2_acc == bvoc_acc))
+		fprintf(log_out, "%sinconsistent accuracies: gasp_acc %u, iaq_acc %u, iaqs_acc %u, co2_acc %u, bvoc_acc %u\n", asctime(localtime(&t)), gasp_acc, iaq_acc, iaqs_acc, co2_acc, bvoc_acc);
 
 	switch (iaqs_acc) {
 	case UNRELIABLE: acc = "run-in stab. ongoing";
@@ -177,7 +177,7 @@ void save_data(int64_t timestamp, float temp, float humidity, float pressure, fl
 		fprintf(log_out, "%sbsec status: %s\n", asctime(localtime(&t)), status);
 	if (log_out == stdout) {
 		fprintf(log_out, "P %.1f mb (hPa)\n", pressure / 100);
-		fprintf(log_out, "T %.1f deg C, H %.1f%%, G %1.1f Ohm\n", temp, humidity, gas);
+		fprintf(log_out, "T %.1f deg C, H %.1f%%, Gi %1.1f Ohm\n", temp, humidity, gas);
 		fprintf(log_out, "Tr %.1f deg C, Hr %.1f%%, Gr %.1f Ohm\n", temp_raw, humidity_raw, gas_raw);
 		fprintf(log_out, "IAQ %.1f, IAQs %.1f, CO2_equiv %.0f ppm, Breath_VOC_equiv %.1f ppm, acc %s\n", iaq, iaqs, co2, bvoc, acc);
 		fprintf(log_out, "IAQ percentage (0 - the best, 100 - the worst): %.0f%%, acc %s\n", gasp, acc);
@@ -725,7 +725,7 @@ void process_data(bsec_input_t *inputs, uint8_t inputs_num)
 			case BSEC_OUTPUT_RAW_HUMIDITY:
 				humidity_raw = outputs[i].signal;
 				break;
-			case BSEC_OUTPUT_COMPENSATED_GAS:
+			case BSEC_OUTPUT_COMPENSATED_GAS: //reserved internal debug output
 				gas = outputs[i].signal;
 				gas_acc = outputs[i].accuracy;
 				break;
