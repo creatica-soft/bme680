@@ -71,7 +71,7 @@ rrdtool tune /var/rrd/env.rrd \
           RRA:MAX:0.5:1m:1d \
           RRA:MAX:0.5:1h:1M \
           RRA:MAX:0.5:1d:10y \
-          DS:bvoc:GAUGE:60:0:1000 \
+          DS:bvoc:GAUGE:60:0:10000 \
           RRA:AVERAGE:0.5:1m:1d \
           RRA:AVERAGE:0.5:1h:1M \
           RRA:AVERAGE:0.5:1d:10y \
