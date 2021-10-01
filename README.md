@@ -57,6 +57,66 @@ file bsec
 bsec: ELF 32-bit LSB executable, ARM, EABI5 version 1 (GNU/Linux), statically linked, for GNU/Linux 3.2.0, BuildID[sha1]=0cf8e44276b114a9f271244a7b111a63c12a57f1, not stripped
 ```
 
+## 64-bit alpine
+
+In 64-bit alpine need to create chroot and install 32-bit alpine into it. Details are in https://wiki.alpinelinux.org/wiki/Alpine_Linux_in_a_chroot
+
+```
+curl -L0 https://dl-cdn.alpinelinux.org/alpine/v3.14/main/armhf/apk-tools-static-2.12.7-r0.apk
+
+sudo mkdir /armhf
+tar -xzf apk-tools-static-*.apk
+./sbin/apk.static -X https://dl-cdn.alpinelinux.org/latest-stable/main -U --allow-untrusted -p /armhf --initdb add alpine-base
+
+vi /etc/fstab
+/dev    /armhf/dev      none    bind    0       0
+none    /armhf/proc     proc    rw,nosuid,nodev,noexec,relatime 0       0
+/sys    /armhf/sys      none    bind    0       0
+
+mount -a
+
+cp -L /etc/resolv.conf /armhf/etc/
+mkdir -p /armhf/etc/apk
+vi /armhf/etc/apk/repositories
+https://dl-cdn.alpinelinux.org/alpine/v3.14/main
+
+vi /etc/sysctl.conf
+kernel.grsecurity.chroot_deny_chmod = 0
+
+sysctl -p
+
+chroot /armhf ash -l
+apk update
+
+rc-update add devfs sysinit
+rc-update add dmesg sysinit
+rc-update add mdev sysinit
+
+rc-update add hwclock boot
+rc-update add modules boot
+rc-update add sysctl boot
+rc-update add hostname boot
+rc-update add bootmisc boot
+rc-update add syslog boot
+
+rc-update add mount-ro shutdown
+rc-update add killprocs shutdown
+rc-update add savecache shutdown
+
+apk add -arch amrhf alpine-sdk linux-headers wget util-linux findutils-locate git
+wget https://git.kernel.org/pub/scm/utils/i2c-tools/i2c-tools.git/snapshot/i2c-tools-4.2.tar.gz
+tar -zxf i2c-tools-4.2.tar.gz
+cd i2c-tools-4.2/
+vi Makefile
+USE_STATIC_LIB ?= 1
+
+make
+
+git clone --depth 1 https://github.com/creatica-soft/bme680.git
+cd bme680/bsec
+gcc -O3 -o bsec bsec.c bme680.c -L ../../i2c-tools-4.2/lib -L . -li2c -lalgobsec -lm -static
+```
+
 ## RRD config
 
 Create rrd database
